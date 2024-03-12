@@ -27,7 +27,7 @@ app.use(cors());
 
 
 //[Database Connection]
-mongoose.connect("mongodb+srv://admin:admin1234@dmbilledo.m7zlzwk.mongodb.net/course-booking-API?retryWrites=true&w=majority&appName=DMbilledo");
+mongoose.connect("mongodb+srv://admin:admin1234@wdc028-course-booking.ozpncap.mongodb.net/course-booking-API?retryWrites=true&w=majority&appName=WDC028-Course-Booking");
 let db = mongoose.connection;
 db.on("error", console.error.bind(console,"connection error"));
 db.once("open",()=>console.log("Now connected to MongoDB Atlas!"));
