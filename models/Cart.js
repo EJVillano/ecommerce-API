@@ -1,27 +1,37 @@
-//[Section] Activity
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const courseSchema = new mongoose.Schema({
-    name: {
+//[Schema/Blueprint]
+
+const cartSchema = new mongoose.Schema({
+
+    userId:{
         type: String,
-        required: [true, 'Course Name is Required']
+        required:[true,'User ID is Required']
     },
-    description: {
-        type: String,
-        required: [true, 'Course Description is Required']
-    },
-    price: {
+    cartItems:[
+        {
+            productId:{
+                type: String,
+                required:[true,'Product ID is Required']
+            }
+            quantity : {
+                type: Number,
+                required:[true,'quantity is Required']
+            }
+            subtotal : {
+                type: Number,
+                required:[true,'subtotal is Required']
+            }
+        }
+    ],
+    totalPrice:{
         type: Number,
-        required: [true, 'Course Price is Required']
+        required: [true, 'totalPrice is Required']
     },
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-    createdOn: {
+    orderedOn:{
         type: Date,
-        default: Date.now
+        default:Date.now
     }
-});
+})
 
-module.exports = mongoose.model('Course', courseSchema);
+module.exports = mongoose.model('Cart',cartSchema);
