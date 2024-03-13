@@ -1,7 +1,7 @@
 //[Dependencies and Modules]
 const jwt = require("jsonwebtoken");
 
-const secret = "CourseBookingAPI";
+const secret = "ECommerceAPI";
 
 
 

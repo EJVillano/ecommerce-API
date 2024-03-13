@@ -12,3 +12,13 @@
 ## Quantity Customer:
 ### email : customer@gmail.com
 ### password : customer123
+
+## Features by Dan Billedo:
+### User Registration
+### User Authentication
+
+
+## Features by Edgar Villano:
+### Set User as admin
+### Retrieve User Deatails
+### Update Password

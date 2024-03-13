@@ -3,44 +3,90 @@ const bcrypt = require("bcrypt")
 
 const User = require("../models/User.js");
 
-const { verify, isLoggedIn } = require("../auth.js");
+const auth = require("../auth.js")
+
 
 module.exports.registerUser = (req,res) => {
-
-    let newUser = new User({
-        firstName : req.body.firstName,
-        lastName : req.body.lastName,
-        email : req.body.email,
-        mobileNo : req.body.mobileNo,
-        password : bcrypt.hashSync(req.body.password, 10)
-    })
-
-    return newUser.save()
-    .then((result) => res.status(201).send(result))
-    .catch(err => res.status(500).send(err))
-
+	// checks if the email is in the right format
+	if (!req.body.email.includes("@")){
+		return res.status(400).send({ error: "Email invalid" });
+	}
+	// checks if the mobile number has the correct number of characters
+	else if (req.body.mobileNo.length !== 11){
+		return res.status(400).send({ error: "Mobile number invalid" });
+	}
+	// checks if the password has atleast 8 characters
+	else if (req.body.password.length < 8) {
+		return res.status(400).send({ error: "Password must be atleast 8 characters" });
+	}
+	// if all needed formats are achieved
+	else {
+		
+		let newUser = new User({
+			firstName : req.body.firstName,
+			lastName : req.body.lastName,
+			email : req.body.email,
+			mobileNo : req.body.mobileNo,
+			password : bcrypt.hashSync(req.body.password, 10)
+		})
+		// Saves the created object to our database
+		return newUser.save()
+		.then((user) => res.status(201).send({ message: "Registered Successfully" }))
+		.catch(err => {
+			console.error("Error in saving: ", err)
+			return res.status(500).send({ error: "Error in save"})
+		})
+	}
 };
 
-module.exports.authenticationUser = (req,res) => {
+module.exports.checkEmailExists = (req,res) => {
+	// validations can be done in either routes or controllers, however, we must be careful in placing our validations in the controllers for it may return data other than a Promise (e.g. primitive data types) which cannot be caught by the routes.
+	// validation if the request body sent has the "@" symbol.
+	if (req.body.email.includes("@")){
+		return User.find({ email : req.body.email })
+		.then(result => {
 
+			if (result.length > 0) {
+				return res.status(409).send({ error: "Duplicate Email Found" });
+			} else {
+				return res.status(404).send({ message: "Email not found" });
+			};
+		})
+		.catch(err => {
+			console.error("Error in find", err)
+			return res.status(500).send({ error: "Error in find"});
+		});
+	} else {
+	    return res.status(400).send({ error: "Invalid Email"})
+	};
+}
 
+module.exports.loginUser = (req, res) =>{
+    
     if(req.body.email.includes("@")){
 
-        return User.find({ email : req.body.email })
-        .then(result => {
+        return User.findOne({email : req.body.email})
+        .then(result=>{
+            if(result == null){
+                return res.status(404).send({message : "No Email Found"});
+            }else{
 
-            if (result.length > 0) {
-                return res.status(409).send({message : "Duplicate Email Found"});
-            } else {
-                return res.status(404).send({message : "Email not found"});
-            };
-        })
-        .catch(err => res.status(400).send({message : "Invalid email"}));           
+                const isPasswordCorrect = bcrypt.compareSync(req.body.password, result.password);
+                if(isPasswordCorrect){
+                    return res.status(200).send({access: auth.createAccessToken(result)})
+                }else{
+                    return res.status(401).send({message : "Email and password do not match"}
+                        );
+                }
+            }
+        }).catch(err => {
+            console.error("Error in finding user:", err); // Log the error
+            return res.status(500).json({ message: "Error in finding user" });
+        });
 
     }else{
-        res.status(500).send({message : "Invalid email"});
+        return res.status(400).send({message : "Invalid email"})
     }
-
 };
 
 module.exports.getProfile = (req, res) => {
@@ -105,3 +151,4 @@ module.exports.updatePassword = (req , res) => {
 	
 
 }
+
