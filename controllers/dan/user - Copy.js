@@ -21,24 +21,26 @@ module.exports.registerUser = (req,res) => {
 
 };
 
-module.exports.authenticationUser = (req,res) => {
-
-
+module.exports.loginUser = (req, res) =>{
+    
     if(req.body.email.includes("@")){
 
-        return User.find({ email : req.body.email })
-        .then(result => {
+        return User.findOne({email:req.body.email}).then(result=>{
+            if(result == null){
+                return res.status(404).send({message : "No Email Found"});
+            }else{
 
-            if (result.length > 0) {
-                return res.status(409).send({message : "Duplicate Email Found"});
-            } else {
-                return res.status(404).send({message : "Email not found"});
-            };
-        })
-        .catch(err => res.status(400).send({message : "Invalid email"}));           
+                const isPasswordCorrect = bcrypt.compareSync(req.body.password, result.password);
+                if(isPasswordCorrect){
+                    return res.status(200).send({access: auth.createAccessToken(result)})
+                }else{
+                    return res.status(401).send({message : "Email and password do not match"}
+                        );
+                }
+            }
+        }).catch(err=>res.status(500).send({message : "Error in find"}))
 
     }else{
-        res.status(500).send({message : "Invalid email"});
+        return res.status(400).send({message : "Invalid email"})
     }
-
 };

@@ -10,7 +10,7 @@ const userController = require("../controllers/user.js");
 
 //[Routes]
 router.post("/registerUser", userController.registerUser);
-router.post("/authenticationUserl", userController.checkEmailExists);
+router.post("/login", userController.loginUser);
 router.get("/details", verify, userController.getProfile);
 
 
