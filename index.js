@@ -8,6 +8,7 @@ const cors = require("cors");
 //allows us to access routes defined within routes/user
 const userRoutes = require("./routes/user.js");
 const productRoutes = require("./routes/product.js");
+const cartRoutes = require("./routes/cart.js");
 
 //[Environment Setup]
 const port = 4000;
@@ -34,6 +35,7 @@ db.once("open",()=>console.log("Now connected to MongoDB Atlas!"));
 //[/users]
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
+app.use("/carts", cartRoutes);
 
 
 

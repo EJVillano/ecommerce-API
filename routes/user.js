@@ -4,7 +4,6 @@ const express = require("express");
 //[Routing Component]
 const router = express.Router();
 const userController = require("../controllers/user.js");
-
 const { verify, verifyAdmin } = require("../auth.js");
 
 

@@ -1,4 +1,4 @@
-
+//[Dependencies and Modules]
 
 const Product = require("../models/Product");
 

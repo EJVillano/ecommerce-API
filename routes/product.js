@@ -1,11 +1,12 @@
-
+//[Dependencies and Modules]
 const express = require("express");
-const productController = require("../controllers/product");
-const {verify, verifyAdmin} = require("../auth");
+
 
 //[Routing Component] 
 
 const router = express.Router();
+const productController = require("../controllers/product");
+const {verify, verifyAdmin} = require("../auth");
 
 router.post("/", verify, verifyAdmin, productController.addProduct);
 
