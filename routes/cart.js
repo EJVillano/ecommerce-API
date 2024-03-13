@@ -13,6 +13,6 @@ router.get("/get-cart", verify, cartController.getCart);
 
 router.post("/add-to-cart", verify, cartController.addToCart);
 
-router.patch("/update-cart-quantity", verify, verifyAdmin, cartController.updateCart);
+router.patch("/update-cart-quantity", verify,  cartController.updateCart);
 
 module.exports = router;
