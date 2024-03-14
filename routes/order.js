@@ -1,15 +1,14 @@
-const express = require('express');
+//[Dependencies and Modules]
+const express = require("express");
+
 const router = express.Router();
-const orderController = require('../controllers/orderController');
-const { authenticateUser, isAdmin } = require('../middleware/authMiddleware');
+const orderController = require("../controllers/order");
+const {verify, verifyAdmin} = require("../auth");
 
-// Non-admin User checkout (Create order)
-router.post('/orders', authenticateUser, orderController.createOrder);
+router.post("/checkout", verify, orderController.createOrder);
 
-// Retrieve authenticated user's orders
-router.get('/orders/user', authenticateUser, orderController.getUserOrders);
+router.get("/my-orders", verify, orderController.myOrder);
 
-// Retrieve all orders (Admin only)
-router.get('/orders', authenticateUser, isAdmin, orderController.getAllOrders);
+router.get("/all-orders", verify, verifyAdmin, orderController.allOrder);
 
 module.exports = router;

@@ -9,6 +9,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/user.js");
 const productRoutes = require("./routes/product.js");
 const cartRoutes = require("./routes/cart.js");
+const orderRoutes = require("./routes/order.js");
 
 //[Environment Setup]
 const port = 4000;
@@ -36,6 +37,7 @@ db.once("open",()=>console.log("Now connected to MongoDB Atlas!"));
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
+app.use("/orders", orderRoutes);
 
 
 

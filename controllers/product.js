@@ -32,9 +32,6 @@ module.exports.addProduct = (req, res) => {
 		
 }; 
 
-
-//[Retrieve all product] 
-
 module.exports.getAllProducts = (req, res) => {
     
     return Product.find({})
@@ -84,8 +81,6 @@ module.exports.getProduct = (req, res) => {
 		return res.status(500).send({ error: 'Failed to fetch product' });
 	})
 };
-
-
 
 module.exports.updateProduct = (req,res)=>{
 
@@ -162,3 +157,33 @@ module.exports.activateProduct = (req, res) => {
     	return res.status(500).send({ error: 'Failed to activating a product' })
     });
 };
+
+module.exports.searchByName = (req, res) => {
+    const productName = req.body.productName;
+
+    // Perform case-insensitive search for products with matching names
+    Product.find({ name: { $regex: new RegExp(productName, 'i') } })
+    .then(products => {
+        res.status(200).json(products);
+    })
+    .catch(error => {
+        console.error("Error in searching products: ", error);
+        res.status(500).send({ error: 'Internal server error' });
+    });
+};
+
+module.exports.searchByPrice = (req, res) => {
+    const minPrice = req.body.minPrice;
+    const maxPrice = req.body.maxPrice;
+
+    // Perform search for products within the price range
+    Product.find({ price: { $gte: minPrice, $lte: maxPrice } })
+    .then(products => {
+        res.status(200).send(products);
+    })
+    .catch(error => {
+        console.error("Error in searching products by price: ", error);
+        res.status(500).json({ error: 'Internal server error' });
+    });
+};
+
