@@ -9,7 +9,7 @@ const { verify, verifyAdmin } = require("../auth.js");
 
 
 //[Routes]
-router.post("/register", userController.registerUser);
+router.post("/", userController.registerUser);
 
 router.post("/login", userController.loginUser);
 

@@ -35,7 +35,7 @@ db.once("open",()=>console.log("Now connected to MongoDB Atlas!"));
 //[/users]
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
-app.use("/carts", cartRoutes);
+app.use("/cart", cartRoutes);
 
 
 

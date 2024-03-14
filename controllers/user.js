@@ -48,6 +48,8 @@ module.exports.registerUser = (req,res) => {
 };
 
 
+
+
 module.exports.loginUser = (req, res) =>{
     
     if(req.body.email.includes("@")){
