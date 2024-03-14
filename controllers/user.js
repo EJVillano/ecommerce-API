@@ -21,45 +21,32 @@ module.exports.registerUser = (req,res) => {
 	}
 	// if all needed formats are achieved
 	else {
-		
-		let newUser = new User({
-			firstName : req.body.firstName,
-			lastName : req.body.lastName,
-			email : req.body.email,
-			mobileNo : req.body.mobileNo,
-			password : bcrypt.hashSync(req.body.password, 10)
-		})
-		// Saves the created object to our database
-		return newUser.save()
-		.then((user) => res.status(201).send({ message: "Registered Successfully" }))
-		.catch(err => {
-			console.error("Error in saving: ", err)
-			return res.status(500).send({ error: "Error in save"})
-		})
+
+        User.find({ email : req.body.email })
+        .then((existingUser) => {
+
+            if (existingUser.length > 0) {
+				return res.status(409).send({ error: "Duplicate Email Found" });
+			} else {
+				let newUser = new User({
+                    firstName : req.body.firstName,
+                    lastName : req.body.lastName,
+                    email : req.body.email,
+                    mobileNo : req.body.mobileNo,
+                    password : bcrypt.hashSync(req.body.password, 10)
+                })
+                // Saves the created object to our database
+                return newUser.save()
+                .then((user) => res.status(201).send({ message: "Registered Successfully" }))
+                .catch(err => {
+                    console.error("Error in saving: ", err)
+                    return res.status(500).send({ error: "Error in save"})
+                })
+			};
+        })
 	}
 };
 
-module.exports.checkEmailExists = (req,res) => {
-	// validations can be done in either routes or controllers, however, we must be careful in placing our validations in the controllers for it may return data other than a Promise (e.g. primitive data types) which cannot be caught by the routes.
-	// validation if the request body sent has the "@" symbol.
-	if (req.body.email.includes("@")){
-		return User.find({ email : req.body.email })
-		.then(result => {
-
-			if (result.length > 0) {
-				return res.status(409).send({ error: "Duplicate Email Found" });
-			} else {
-				return res.status(404).send({ message: "Email not found" });
-			};
-		})
-		.catch(err => {
-			console.error("Error in find", err)
-			return res.status(500).send({ error: "Error in find"});
-		});
-	} else {
-	    return res.status(400).send({ error: "Invalid Email"})
-	};
-}
 
 module.exports.loginUser = (req, res) =>{
     
