@@ -5,8 +5,10 @@ const User = require("../models/User.js");
 
 const auth = require("../auth.js")
 
+const transporter = require("../nodemailer.js");
 
-module.exports.registerUser = (req,res) => {
+// without email notification
+/* module.exports.registerUser = (req,res) => {
 	// checks if the email is in the right format
 	if (!req.body.email.includes("@")){
 		return res.status(400).send({ error: "Email invalid" });
@@ -46,7 +48,63 @@ module.exports.registerUser = (req,res) => {
         })
 	}
 };
+ */
 
+// with email notification
+module.exports.registerUser = (req, res) => {
+    // checks if the email is in the right format
+    if (!req.body.email.includes("@")) {
+        return res.status(400).send({ error: "Email invalid" });
+    }
+    // checks if the mobile number has the correct number of characters
+    else if (req.body.mobileNo.length !== 11) {
+        return res.status(400).send({ error: "Mobile number invalid" });
+    }
+    // checks if the password has at least 8 characters
+    else if (req.body.password.length < 8) {
+        return res.status(400).send({ error: "Password must be at least 8 characters" });
+    }
+    // if all needed formats are achieved
+    else {
+        User.find({ email: req.body.email })
+            .then(existingUser => {
+                if (existingUser.length > 0) {
+                    return res.status(409).send({ error: "Duplicate Email Found" });
+                } else {
+                    let newUser = new User({
+                        firstName: req.body.firstName,
+                        lastName: req.body.lastName,
+                        email: req.body.email,
+                        mobileNo: req.body.mobileNo,
+                        password: bcrypt.hashSync(req.body.password, 10)
+                    })
+                    // Save the created object to our database
+                    return newUser.save()
+                        .then(user => {
+                            // Send email notification
+                            transporter.sendMail({
+                                from: 'dacct1002@gmail.com',
+                                to: req.body.email,
+                                subject: 'Registration Successful',
+                                text: 'Thank you for registering to Ecommerce.'
+                            }, (error, info) => {
+                                if (error) {
+                                    console.error('Error sending email:', error);
+                                } else {
+                                    console.log('Email sent:', info.response);
+                                }
+                            });
+
+                            return res.status(201).send({ message: "Registered Successfully" });
+                        })
+                        .catch(err => {
+                            console.error("Error in saving: ", err);
+                            return res.status(500).send({ error: "Error in save" });
+                        });
+                };
+            })
+    }
+};
 
 
 
@@ -121,7 +179,8 @@ module.exports.setAsAdmin = (req, res) => {
     });
 };
 
-module.exports.updatePassword = (req , res) => {
+// without email notification
+/* module.exports.updatePassword = (req , res) => {
 
 	return User.findOne({email : req.body.email})
     .then(result =>{
@@ -137,6 +196,50 @@ module.exports.updatePassword = (req , res) => {
         }
 		
 	}).catch(err=> res.status(500).send({ error: 'Failed to updating password' }))
+	
+
+} */
+
+// with email notification
+module.exports.updatePassword = (req , res) => {
+
+	const { email, password } = req.body;
+
+    User.findOne({ email })
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ error: 'User not found' });
+            }
+
+            // Update the user's password
+            user.password = bcrypt.hashSync(password, 10);
+            user.save()
+                .then(() => {
+                    // Send email notification
+                    transporter.sendMail({
+                        from: 'your_email@gmail.com',
+                        to: email,
+                        subject: 'Password Updated',
+                        text: 'Your password has been successfully updated.'
+                    }, (error, info) => {
+                        if (error) {
+                            console.error('Error sending email:', error);
+                        } else {
+                            console.log('Email sent:', info.response);
+                        }
+                    });
+
+                    return res.status(200).send({ message: 'User password updated successfully' });
+                })
+                .catch(err => {
+                    console.error('Error updating password:', err);
+                    return res.status(500).send({ error: 'Failed to update password' });
+                });
+        })
+        .catch(err => {
+            console.error('Error finding user:', err);
+            return res.status(500).send({ error: 'Failed to find user' });
+        });
 	
 
 }
