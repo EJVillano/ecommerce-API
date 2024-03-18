@@ -1,0 +1,62 @@
+html 
+{
+	scroll-behavior: smooth;
+}
+
+html::-webkit-scollbar 
+{
+	display: none;
+}
+
+#main-nav
+{
+	background-color: transparent;
+}
+
+section
+{
+	height: 100vh;
+}
+
+#home
+{
+	background: url('images/img-1.jpg');
+	background-position:top;
+	background-repeat: no-repeat;
+	background-size:;
+}
+
+.custom-col
+{
+	margin-top: 25%;
+}
+
+i {
+	color: black;
+}
+
+.img-hero
+{
+	height: auto;
+}
+
+.spacing 
+{
+	margin-top: 10%;
+}
+
+.card-icon
+{
+	font-size: 3rem;
+}
+
+.block
+{
+	height: .3rem;
+	weight:6rem;
+	background-color: black;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 2rem;
+	opacity: 0.5;
+}
